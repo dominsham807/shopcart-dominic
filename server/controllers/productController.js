@@ -1,38 +1,36 @@
 import Product from "../models/Product.js"
+import asyncHandler from "../middlewares/asyncHandler.js"
 
-export const getAllProducts = async(req, res) => {
+export const getAllProducts = asyncHandler(async(req, res) => {
     const products = await Product.find({})
 
     return res.status(200).json({
         success: true,
         products
     })
-}
+})
 
-export const getProductById = async(req, res) => {
-    try{
-        const product = await Product.findById(req.params.id)
+export const getProductById = asyncHandler(async(req, res) => {
+    const product = await Product.findById(req.params.id)
+    if(product){
         return res.status(200).json({
             success: true,
             product
         })
-    } catch(error){
-        console.log(error)
-        return res.status(404).json({
-            success: false,
-            message: "Product not found"
-        })
+    } else{
+        res.status(404)
+        throw new Error("Product not found")
     }
-}
+})
 
-export const getLatestProducts = async(req, res) => {
+export const getLatestProducts = asyncHandler(async(req, res) => {
     const products = await Product.find({}).sort({ createdAt: -1 })
     
     return res.status(200).json({
         success: true,
         products
     })
-}
+})
 
 export const getCategories = async(req, res) => {
     const categories = await Product.distinct("category")

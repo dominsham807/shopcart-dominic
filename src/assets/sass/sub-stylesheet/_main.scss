@@ -3274,6 +3274,9 @@
                                     font-size: 14px;
                                 }
                             }
+                            .remove-item-img{
+                                cursor: pointer;
+                            }
 						}
 					}
 				}
@@ -3308,10 +3311,13 @@
 					}
 				}
 				.cart-checkout {
+                    // left: 50%;
 					@extend %w-100;
 				    margin-top: 30px;
+                    margin-left: auto;
 				    @extend %justify-between;
 				    @extend %flex;
+                    align-items: center;
 					@include breakpoint(lg) {
 						max-width: 390px;
 					    text-align: right;
@@ -3340,6 +3346,9 @@
 							border-color: $theme-color;
                         }
 					}
+                    .checkout-modal{
+                        margin-left: auto;
+                    }
 				}
 			}
 			.shipping-box {

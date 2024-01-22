@@ -4,11 +4,12 @@ import PageHeader from '../components/PageHeader'
 import { Link } from 'react-router-dom'
 import delImgUrl from "../assets/images/shop/del.png"
 import CheckoutModal from '../components/CheckoutModal'
-import { updateCart } from '../redux/reducers/cartReducer.js'
+import { decrementItemQty, incrementItemQty, removeItem } from '../redux/reducers/cartReducer.js'
 import toast from 'react-hot-toast'
 
 const Cart = () => {
     const [updateCartItems, setUpdateCartItems] = useState([])
+    const [shippingCharge, setShippingCharge] = useState(200)
     const [coupon, setCoupon] = useState("")
     const [state, setState] = useState("")
     const [zipCode, setZipCode] = useState("")
@@ -24,15 +25,28 @@ const Cart = () => {
 
     console.log(updateCartItems)
 
-    const cartSubtotal = updateCartItems.reduce((total, item) => {
+    const cartSubtotal = cartItems.reduce((total, item) => {
         return total + item.quantity*item.price 
     }, 0)
 
-    const handleUpdateCart = (e) => {
-        e.preventDefault()
+    // const handleUpdateCart = (e) => {
+    //     e.preventDefault()
 
-        dispatch(updateCart(updateCartItems))
-        toast.success("Cart has been updated")
+    //     dispatch(updateCart(updateCartItems))
+    //     toast.success("Cart has been updated")
+    // }
+
+    const incrementHandler = (item) => {
+        dispatch(incrementItemQty(item))
+    }
+
+    const decrementHandler = (item) => {
+        dispatch(decrementItemQty(item))
+    }
+
+    const deleteItemHandler = (item) => {  
+        dispatch(removeItem(item))
+        toast.success("Item removed from cart")
     }
 
     return (
@@ -55,49 +69,51 @@ const Cart = () => {
                                 </thead>
                                 <tbody>
                                     {cartItems?.map((item, index) => {
-                                        const [itemQty, setItemQty] = useState(item.quantity)
-                                        console.log(itemQty)
-                                        // setUpdateCartItems({...item, quantity: itemQty})
-                                        const totalPrice = item.price * itemQty
-                                        console.log(totalPrice)
+                                        // const [itemQty, setItemQty] = useState(item.quantity)
+                                        // console.log(itemQty)
+                                        // // setUpdateCartItems({...item, quantity: itemQty})
+                                        const totalPrice = item.price * item.quantity
+                                        // console.log(totalPrice)
 
-                                        const handleIncrease = () => {
-                                            if(itemQty < 10){
-                                                setItemQty(itemQty + 1)
-                                                let newCartItems = updateCartItems.map((cartItem) => {
-                                                    if(cartItem._id === item._id) {
-                                                        return {...item, quantity: itemQty + 1 }
-                                                    }
-                                                    return cartItem
-                                                })
-                                                setUpdateCartItems(newCartItems)
-                                                // const newData = updateCartItems.find((cartItem) => {
-                                                //     return cartItem.quantity === item.quantity + 1
-                                                // })
-                                                // console.log(newData)
-                                                // const otherItems = original
-                                                // otherItems.push({...item, quantity: itemQty + 1 })
-                                                // console.log(otherItems)
-                                                // setUpdateCartItems(otherItems)
-                                                // console.log(itemQty) 
-                                            }  
-                                        }
+                                        // const handleIncrease = () => {
+                                        //     if(itemQty < 10){
+                                        //         setItemQty(itemQty + 1)
+
+                                        //         // dispatch(updateCartItemQuantity({...item, quantity: itemQty + 1}))
+                                        //         let newCartItems = updateCartItems.map((cartItem) => {
+                                        //             if(cartItem._id === item._id) {
+                                        //                 return {...item, quantity: itemQty + 1 }
+                                        //             }
+                                        //             return cartItem
+                                        //         })
+                                        //         setUpdateCartItems(newCartItems)
+                                        //         // const newData = updateCartItems.find((cartItem) => {
+                                        //         //     return cartItem.quantity === item.quantity + 1
+                                        //         // })
+                                        //         // console.log(newData)
+                                        //         // const otherItems = original
+                                        //         // otherItems.push({...item, quantity: itemQty + 1 })
+                                        //         // console.log(otherItems)
+                                        //         // setUpdateCartItems(otherItems)
+                                        //         // console.log(itemQty) 
+                                        //     }  
+                                        // }
                                         
-                                        // console.log(updateCartItems)
-                                        const handleDecrease = () => {
-                                            console.log(itemQty)
-                                            if(itemQty > 1){
-                                                setItemQty(itemQty - 1)
-                                                let newCartItems = updateCartItems.map((cartItem) => {
-                                                    if(cartItem._id === item._id) {
-                                                        return {...item, quantity: itemQty - 1 }
-                                                    }
-                                                    return cartItem
-                                                })
-                                                setUpdateCartItems(newCartItems)
-                                                // console.log(itemQty)
-                                            }
-                                        } 
+                                        // // console.log(updateCartItems)
+                                        // const handleDecrease = () => {
+                                        //     console.log(itemQty)
+                                        //     if(itemQty > 1){
+                                        //         setItemQty(itemQty - 1)
+                                        //         let newCartItems = updateCartItems.map((cartItem) => {
+                                        //             if(cartItem._id === item._id) {
+                                        //                 return {...item, quantity: itemQty - 1 }
+                                        //             }
+                                        //             return cartItem
+                                        //         })
+                                        //         setUpdateCartItems(newCartItems)
+                                        //         // console.log(itemQty)
+                                        //     }
+                                        // } 
 
                                         return (
                                             <tr key={index}>
@@ -123,12 +139,25 @@ const Cart = () => {
                                                 <td className="cat-quantity">
                                                     <div className="p-content text-center">
                                                         <div className="cart-plus-minus">
-                                                            <div className="dec qtybutton" onClick={() => handleDecrease()}>
+                                                            <div className="dec qtybutton" 
+                                                                onClick={() => {
+                                                                    // setItemQty(item.quantity - 1)
+                                                                    decrementHandler(item)
+                                                                }}
+                                                            >
                                                                 - 
                                                             </div>
                                                             <input type="text" className="cart-plus-minus-box" 
-                                                            name='qtybutton' value={itemQty} onChange={(e) => setItemQty(parseInt(e.target.value))}/>
-                                                            <div className="inc qtybutton" onClick={() => handleIncrease()}>
+                                                                name='qtybutton' value={item.quantity} 
+                                                                onChange={() => {}}
+                                                                // onChange={(e) => setItemQty(parseInt(e.target.value))}
+                                                            />
+                                                            <div className="inc qtybutton" 
+                                                                onClick={() => {
+                                                                    // setItemQty(item.quantity + 1)
+                                                                    incrementHandler(item)
+                                                                }}
+                                                            >
                                                                 + 
                                                             </div>
                                                         </div> 
@@ -140,10 +169,10 @@ const Cart = () => {
                                                     </div> 
                                                 </td>
                                                 <td className="cat-edit">
-                                                    <div className="p-content text-center">
-                                                        <a href="#">
-                                                            <img src={delImgUrl} alt="Remove Image" />
-                                                        </a>
+                                                    <div className="p-content text-center"> 
+                                                        <div onClick={() => deleteItemHandler(item)}>
+                                                            <img src={delImgUrl} alt="Remove Image" className='remove-item-img' /> 
+                                                        </div> 
                                                     </div> 
                                                 </td>
                                             </tr>
@@ -160,8 +189,8 @@ const Cart = () => {
                                     <input type="submit" value="Apply Coupon" />
                                 </form> 
                                 <form action="/" className="cart-checkout">
-                                    <button className='px-5' onClick={handleUpdateCart}>Update Cart</button>
-                                    <div>
+                                    {/* <button className='px-5' onClick={()=>{}}>Update Cart</button> */}
+                                    <div className='checkout-modal'>
                                         <CheckoutModal />
                                     </div>
                                 </form>
@@ -197,14 +226,16 @@ const Cart = () => {
                                             <h3>Cart Total</h3>
                                             <ul className="lab-ul">
                                                 <li>
-                                                    <span className="pull-left">Cart Subtotal</span>
+                                                    <span className="pull-left">Subtotal</span>
                                                     <p className="pull-right">${cartSubtotal}</p>
                                                 </li>
                                                 <li>
-                                                    <span className="pull-left">
-                                                        Shipping and Handling
-                                                    </span>
-                                                    <p className="pull-right">{cartSubtotal > 1000 ? "Free of Charge" : "$200"}</p>
+                                                    <span className="pull-left">Shipping and Handling</span>
+                                                    <p className="pull-right">{cartSubtotal > 1000 ? 0 : `$${shippingCharge}`}</p>
+                                                </li>
+                                                <li>
+                                                    <span className="pull-left">Cart Total</span>
+                                                    <p className="pull-right">${cartSubtotal + shippingCharge}</p>
                                                 </li>
                                             </ul>
                                         </div>

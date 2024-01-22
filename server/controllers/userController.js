@@ -1,8 +1,9 @@
+import asyncHandler from "../middlewares/asyncHandler.js"
 import userModel from "../models/User.js"
 import { comparePassword, hashPassword } from "../utils/authHelper.js"
 import jwt from "jsonwebtoken"
 
-export const registerUser = async(req,res) => {
+export const registerUser = asyncHandler(async(req,res) => {
     try{
         const { name, email, password, phone } = req.body
         if(!name || !email || !password || !phone){
@@ -11,10 +12,8 @@ export const registerUser = async(req,res) => {
 
         const existingUser = await userModel.findOne({ email })
         if(existingUser){
-            return res.json({
-                success: false,
-                message: "This email already has an account. Please use another one"
-            })
+            res.status(400)
+            throw new Error("This email already has an account. Please use another one")
         }
 
         const hashedPassword = await hashPassword(password)
@@ -29,41 +28,32 @@ export const registerUser = async(req,res) => {
         })
     } catch(error){
         console.log(error)
-        res.status(500).send({
-            success: false,
-            message: "Error in registration",
-            error 
-        })
+        res.status(500)
+        throw new Error("Failed to register")
     }
-}
+})
 
 export const loginUser = async(req, res) => {
     try{
         const { email, password } = req.body
 
         if(!email || !password){
-            return res.status(404).send({
-                success: false,
-                message: "Please fill in all fields"
-            })
+            res.status(400)
+            throw new Error("Please fill in all fields")
         }
     
         const user = await userModel.findOne({ email })
         console.log(user)
 
         if(!user){
-            return res.json({
-                success: false,
-                message: "Invalid email address",
-            });
+            res.status(400)
+            throw new Error("Invalid email address")
         }
     
         const isPasswordMatched = await comparePassword(password, user.password)
-            if(!isPasswordMatched){
-                return res.send({
-                    success: false,
-                    message: "Wrong credentials",
-                });
+        if(!isPasswordMatched){
+            res.status(400)
+            throw new Error("Wrong credentials")
         }
     
         const token = jwt.sign({ _id: user._id}, process.env.JWT_SECRET, {
@@ -82,10 +72,7 @@ export const loginUser = async(req, res) => {
         })
     } catch(error){
         console.log(error)
-        res.status(500).send({
-            success: false,
-            message: "Error in login",
-            error 
-        })
+        res.status(500)
+        throw new Error("Login error")
     }
 }

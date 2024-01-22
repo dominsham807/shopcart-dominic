@@ -27,6 +27,24 @@ export const cartReducer = createSlice({
             }
             state.loading = false
         },
+        incrementItemQty: (state, action) => {
+            console.log(action.payload)
+            // console.log(state.cartItems)
+            const index = state.cartItems.findIndex(
+                (i) => i._id === action.payload._id
+            )
+            console.log(index)
+            state.cartItems[index].quantity += 1 
+        },
+        decrementItemQty: (state, action) => {
+            console.log(action.payload)
+            // console.log(state.cartItems)
+            const index = state.cartItems.findIndex(
+                (i) => i._id === action.payload._id
+            )
+            console.log(index)
+            state.cartItems[index].quantity -= 1 
+        },
         removeItem: (state, action) => {
             state.loading = true
             console.log(action.payload)
@@ -34,13 +52,13 @@ export const cartReducer = createSlice({
                 (i) => i._id !== action.payload._id
             )
             state.loading = false 
-        },
-        updateCart: (state, action) => {
-            state.loading = true
-            state.cartItems = action.payload
-            state.loading = false 
         }
+        // updateCart: (state, action) => {
+        //     state.loading = true
+        //     state.cartItems = action.payload
+        //     state.loading = false 
+        // }
     }
 })
 
-export const { addToCart, removeItem, updateCart } = cartReducer.actions
+export const { addToCart, incrementItemQty, decrementItemQty, removeItem } = cartReducer.actions

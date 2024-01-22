@@ -58,7 +58,7 @@ const Banner = () => {
 
     console.log(loading)
     console.log(categories)
-    console.log(filteredProducts)
+    // console.log(filteredProducts)
 
     const handleSearch = (e) => { 
         const searchTerm = e.target.value 
