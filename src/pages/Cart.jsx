@@ -7,6 +7,7 @@ import CheckoutModal from '../components/CheckoutModal'
 import { FaPen } from "react-icons/fa";
 import { calculateSubtotals, decrementItemQty, incrementItemQty, removeItem, resetCart } from '../redux/reducers/cartReducer.js'
 import toast from 'react-hot-toast'
+import axios from 'axios'
 
 const Cart = () => {
     const [updateCartItems, setUpdateCartItems] = useState([])
@@ -14,13 +15,19 @@ const Cart = () => {
     const [coupon, setCoupon] = useState("")
     const [state, setState] = useState("")
     const [zipCode, setZipCode] = useState("")
+    const [availableCoupons, setAvailableCoupons] = useState([])
+    const [isValidCoupon, setIsValidCoupon] = useState(false)
+
+    console.log(availableCoupons)
+    console.log(isValidCoupon)
+    // console.log(coupon)
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const { cartItems, quantity, shippingCharge, subtotal, total, loading } = useSelector((state) => state.cartReducer)
     console.log(cartItems)
-    console.log(subtotal)
+    // console.log(subtotal)
     
     useEffect(() => {
         setUpdateCartItems(cartItems)
@@ -32,6 +39,13 @@ const Cart = () => {
         dispatch(calculateSubtotals())
     },[])
 
+    useEffect(() => {
+        const getCoupons = async() => {
+            const res = await axios.get("http://localhost:8000/api/payment/coupon")
+            setAvailableCoupons(res.data.coupons)
+        }
+        getCoupons()
+    }, [])
     // const cartSubtotal = cartItems.reduce((total, item) => {
     //     return total + item.quantity*item.price 
     // }, 0)
@@ -61,6 +75,22 @@ const Cart = () => {
     const clearHandler = () => {
         dispatch(resetCart())
         navigate("/shop")
+    }
+
+    const handleCoupon = async(e) => {
+        e.preventDefault()
+        
+
+        const existingCoupon = availableCoupons.findIndex((availableCoupon) => {  
+            availableCoupon.code === coupon
+        })
+        console.log(existingCoupon)
+
+        if(existingCoupon !== -1){
+            setIsValidCoupon(true)
+        } else{
+            setIsValidCoupon(false)
+        }
     }
 
     return (
@@ -275,11 +305,14 @@ const Cart = () => {
                                 </div>
                                 <div className="cart-checkout-box">
                                     <div className="col-md-6 col-12">
-                                        <form className="coupon">
+                                        <form className="coupon" onSubmit={handleCoupon}>
                                             <input type="text" name='coupon' placeholder='Coupon Code...' 
                                             className='cart-page-input-text' value={coupon} onChange={(e) => setCoupon(e.target.value)}/>
                                             <input type="submit" value="Apply Coupon" />
                                         </form>
+                                        {isValidCoupon && (
+                                            <strong>{coupon} applied</strong>
+                                        )}
                                     </div>
                                     <div className="col-md-6 col-12">
                                         <form action="/" className="cart-checkout">

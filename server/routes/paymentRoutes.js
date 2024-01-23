@@ -1,7 +1,8 @@
 import express from "express"
+import { createCoupon, getCoupons } from "../controllers/paymentController.js"
 
 const app = express.Router()
 
-app.post()
+app.route('/coupon').post(createCoupon).get(getCoupons)
 
 export default app 
