@@ -424,10 +424,19 @@
 .cart-plus-minus {
 	border: 1px solid $border-color;
     width: 120px;
-    margin: 0 auto;
+    // margin: 0 auto;
     cursor: pointer;
     @extend %rel;
     @extend %hidden;
+    @include breakpoint(lg) {
+        margin-left: auto;
+    }
+    @include breakpoint(max-xl) {
+        margin-left: auto;
+    }
+    @include breakpoint(xl) {
+        margin: 0 auto;
+    }
 	.dec.qtybutton {
 		border-right: 1px solid $border-color;
 	    height: 40px;

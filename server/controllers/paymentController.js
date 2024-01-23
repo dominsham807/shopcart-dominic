@@ -1,10 +1,9 @@
 import { Coupon } from "../models/Coupon.js"
 
-
 export const createCoupon = async(req, res) => {
     const { code, amount } = req.body 
 
-    if(!coupon || !amount){
+    if(!code || !amount){
         return res.json({
             success: false,
             message: "Please fill in all fields"
@@ -19,4 +18,8 @@ export const createCoupon = async(req, res) => {
         success: true,
         message: `Coupon ${code} created successfully`
     })
+}
+
+export const createPayment = async(req, res) => {
+
 }

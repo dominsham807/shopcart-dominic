@@ -3183,7 +3183,8 @@
                 .cat-product {
                     .p-content {
                         @include breakpoint(max-md) {
-                            display: none;
+                            // display: none;
+                            font-size: 10px;
                         }
                     }
                 }
@@ -3274,12 +3275,19 @@
                                     font-size: 14px;
                                 }
                             }
+                            &.cat-edit {
+                                display: flex;
+                                // gap: 2rem;
+                            }
                             .remove-item-img{
                                 cursor: pointer;
                             }
 						}
 					}
 				}
+                @include breakpoint(max-lg) {
+                    overflow-x: scroll;
+                }
 			}
 		}
 		.cart-bottom {
@@ -3287,16 +3295,18 @@
             box-shadow: 0 0 10px rgba(136, 136, 136, .10);
             @extend %hidden;
 			.cart-checkout-box {
-			    padding: 20px 30px;
+			    // padding: 20px 30px;
 			    margin-top: 30px;
-			    @extend %justify-between;
+			    // @extend %justify-between;
 			    @extend %align-items-center;
 			    @extend %flex;
 				.coupon {
-					max-width: 340px;
+					max-width: 400px;
 					display: flex;
+                    // align-items: start;
 					input {
                         padding: 10px;
+                        width: 100%;
                         @extend %mb-0;
 	    				border: 1px solid $border-color;
                         @include border-radius(3px 0 0 3px);
@@ -3440,7 +3450,16 @@
 							.pull-right {
 								@extend %mb-0;
 								@extend %theme-color; 
-							}
+							} 
+                            transition: all .5s ease-in-out;
+                            &:hover{
+                                background: #f16126;
+                                color: #fff;
+
+                                .pull-right {
+                                    color: #fff;
+                                }
+                            }
 						}
 					}
 				}

@@ -4,8 +4,8 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { BACKEND_URL } from '../constants.js'
 import PageHeader from '../components/PageHeader.jsx'
 import ProductDisplay from '../components/ProductDisplay.jsx'
-import { useDispatch } from 'react-redux'
-import { addToCart, removeItem } from '../redux/reducers/cartReducer.js'
+import { useDispatch, useSelector } from 'react-redux'
+import { addToCart } from '../redux/reducers/cartReducer.js'
 import toast from 'react-hot-toast'
 
 // import { Swiper, SwiperSlide } from "swiper/react";
@@ -17,8 +17,15 @@ import toast from 'react-hot-toast'
 
 
 const ShopProduct = () => {
+    const { cartItems } = useSelector((state) => state.cartReducer)
+    console.log(cartItems)
+
     const [product, setProduct] = useState({})
     const [quantity, setQuantity] = useState(1)
+    const [size, setSize] = useState("")
+    const [color, setColor] = useState("")
+    console.log(size)
+    console.log(color)
 
     const { id } = useParams()
 
@@ -38,6 +45,24 @@ const ShopProduct = () => {
     }, [])
     console.log(product)
 
+    const existingItem = cartItems.find((item) => 
+        item._id === product._id 
+    )
+    console.log(existingItem)
+    const productInCart = cartItems.findIndex((item) => 
+        item._id === product._id 
+    )
+    console.log(productInCart)
+
+    // console.log(existingItem.size)
+    useEffect(() => {
+        if(productInCart !== -1){
+            setQuantity(existingItem.quantity)
+            setSize(existingItem.size)
+            setColor(existingItem.color)
+        }
+    }, [productInCart, existingItem])
+   
     const handleDecrease = () => {
         if(quantity > 1){
             setQuantity(quantity - 1)
@@ -50,7 +75,7 @@ const ShopProduct = () => {
 
     const addToCartHandler = (e) => {
         e.preventDefault()
-        dispatch(addToCart({ ...product, quantity: quantity}))
+        dispatch(addToCart({ ...product, color: color, size: size, quantity: quantity }))
         toast.success("Product added to cart")
     }
 
@@ -65,6 +90,7 @@ const ShopProduct = () => {
                         </div>
                         <div className="col-lg-8 col-12">
                             <article>
+                             
                                 <div className="product-details">
                                     <div className="row align-items-start">
                                         <div className="col-md-6 col-12">
@@ -110,24 +136,24 @@ const ShopProduct = () => {
                                     <div className="row align-items-center">
                                         <form className='product-form'>
                                             <div className="select-product-size">
-                                                <select name="" id="">
-                                                    <option value="">Select Size</option>
-                                                    <option value="">SM</option>
-                                                    <option value="">MD</option>
-                                                    <option value="">LG</option>
-                                                    <option value="">XL</option>
-                                                    <option value="">XXL</option>
+                                                <select name="size" id="" value={size} onChange={(e) => setSize(e.target.value)}>
+                                                    <option value="" >Select Size</option>
+                                                    <option value="SM">SM</option>
+                                                    <option value="MD">MD</option>
+                                                    <option value="LG">LG</option>
+                                                    <option value="XL">XL</option>
+                                                    <option value="XXL">XXL</option>
                                                 </select> 
                                             </div>
 
                                             <div className="select-product-color">
-                                                <select name="" id="">
-                                                    <option>Select Color</option>
-                                                    <option>Pink</option>
-                                                    <option>Ash</option>
-                                                    <option>Red</option>
-                                                    <option>White</option>
-                                                    <option>Blue</option>
+                                                <select name="color" id="" value={color} onChange={(e) => setColor(e.target.value)}>
+                                                    <option value="">Select Color</option>
+                                                    <option value="Pink">Pink</option>
+                                                    <option value="Ash">Ash</option>
+                                                    <option value="Red">Red</option>
+                                                    <option value="White">White</option>
+                                                    <option value="Blue">Blue</option>
                                                 </select> 
                                             </div>
 
@@ -141,10 +167,15 @@ const ShopProduct = () => {
                                                     +
                                                 </div>
                                             </div>
-
-                                            <button className="lab-btn product-addToCart-btn" onClick={addToCartHandler}>
-                                                <span>Add To Cart</span>
-                                            </button>
+                                            {productInCart === -1 ? (
+                                                <button className="lab-btn product-addToCart-btn" onClick={addToCartHandler}>
+                                                    <span>Add To Cart</span>
+                                                </button>
+                                            ) : (
+                                                <button className="lab-btn product-addToCart-btn">
+                                                    <span>Update Cart</span>
+                                                </button>
+                                            )}
                                         </form>
                                     </div>
                                     <div className="row justify-content-center mt-4">
@@ -158,6 +189,8 @@ const ShopProduct = () => {
                                         </Link>
                                     </div>
                                 </div>
+                                
+                              
                                 <div className="review">
 
                                 </div>
